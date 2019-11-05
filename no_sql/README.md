@@ -8,3 +8,15 @@
 3. Используя документацию https://www.aerospike.com/docs/client/python/index.html реализуйте три функции (add_customer, get_ltv_by_id, get_ltv_by_phone)
 
 Решение должно быть в виде одного файла скрипта, использовать 127.0.0.1:3000 в качестве соединения с Aerospike
+
+# Решение
+
+Решение находится в файле client.py
+
+Решение содержит функции add_customer, get_ltv_by_id, get_ltv_by_phone и обвязку для их выхова.
+
+В функции add_customer, get_ltv_by_id, get_ltv_by_phone передаются клиент, подключенный к Aerospike, namespace, set и остальные аргументы.
+
+Адрес сервера, порт, namespace, set и аргументы вызова функций можно задать в аргументах вызова client.py
+
+Если в аргументах вызова client.py не указывается ни  одна из функций add_customer, get_ltv_by_id, get_ltv_by_phone, запускается тест на них.
