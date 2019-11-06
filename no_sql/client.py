@@ -35,13 +35,13 @@ def get_ltv_by_phone(l_client, l_ns, l_st, l_phone_number):
 def test(l_client, l_ns, l_st):
     for i in range(0, 1000):
         add_customer(l_client, l_ns, l_st, i, i, i + 1)
-    print('test add_customer complete')
+    logging.info('test add_customer complete')
 
     for i in range(0, 1000):
         assert (i + 1 == get_ltv_by_id(l_client, l_ns, l_st, i)), "No LTV by ID " + str(i)
-        print('test get_ltv_by_id complete', i)
+        logging.info('test get_ltv_by_id complete', i)
         assert (i + 1 == get_ltv_by_phone(l_client, l_ns, l_st, i)), "No LTV by phone " + str(i)
-        print('test get_ltv_by_phone complete', i)
+        logging.info('test get_ltv_by_phone complete', i)
 
 
 if __name__ == "__main__":
@@ -64,11 +64,17 @@ if __name__ == "__main__":
     # Create a client and connect it to the cluster
     try:
         client = aerospike.client(config).connect()
-        # Create index for 'phone' (needs only once)
-        # client.index_integer_create(ns, st, 'phone', 'phone_idx')
     except:
-        print("failed to connect to the cluster with", config['hosts'])
+        logging.error("Failed to connect to the cluster with {0}".format(config['hosts']))
         sys.exit(1)
+
+    # Create index for 'phone' (needs only once)
+    # Index will be created for new set
+    # Index will not be created for existing set
+    try:
+        client.index_integer_create(ns, st, 'phone', st + '_phone_idx')
+    except:
+        logging.info("Failed to create integer index for 'phone' in set '{0}'".format(st))
 
     # add_customer
     if args.get('add_customer') is not None:
