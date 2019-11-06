@@ -67,8 +67,9 @@ if __name__ == "__main__":
     # Create a client and connect it to the cluster
     try:
         client = aerospike.client(config).connect()
-    except:
+    except Exception as em:
         logging.error("Failed to connect to the cluster with {0}".format(config['hosts']))
+        logging.error("error: {0}".format(em))
         sys.exit(1)
 
     # Create index for 'phone' (needs only once)
@@ -76,8 +77,9 @@ if __name__ == "__main__":
     # Index will not be created for existing set
     try:
         client.index_integer_create(ns, st, 'phone', st + '_phone_idx')
-    except:
+    except Exception as em:
         logging.info("Failed to create integer index for 'phone' in set '{0}'".format(st))
+        logging.info("error: {0}".format(em))
 
     # add_customer
     if args.get('add_customer') is not None:
