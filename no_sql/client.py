@@ -18,30 +18,33 @@ def add_customer(l_client, l_ns, l_st, l_customer_id, l_phone_number, l_lifetime
 
 def get_ltv_by_id(l_client, l_ns, l_st, l_customer_id):
     key = (l_ns, l_st, l_customer_id)
-    (key, metadata, record) = l_client.get(key)
-    if record == {}:
-        logging.error('Requested non-existent customer ' + str(l_customer_id))
-    else:
-        return record.get('ltv')
+    try:
+        (key, metadata, record) = l_client.get(key)
+        if record == {}:
+            logging.error('Requested non-existent customer {0}'.format(str(l_customer_id)))
+        else:
+            return record.get('ltv')
+    except Exception as e:
+        logging.error("error: {0}".format(e))
 
 
 def get_ltv_by_phone(l_client, l_ns, l_st, l_phone_number):
     records = l_client.query(l_ns, l_st).select('phone', 'ltv').where(p.equals('phone', l_phone_number)).results()
     if len(records) > 0:
         return records[0][2]['ltv']
-    logging.error('Requested phone number is not found ' + str(l_phone_number))
+    logging.error('Requested phone number is not found {0}'.format(str(l_phone_number)))
 
 
 def test(l_client, l_ns, l_st):
     for i in range(0, 1000):
         add_customer(l_client, l_ns, l_st, i, i, i + 1)
-    logging.info('test add_customer complete')
+    logging.info('Test add_customer complete')
 
     for i in range(0, 1000):
-        assert (i + 1 == get_ltv_by_id(l_client, l_ns, l_st, i)), "No LTV by ID " + str(i)
-        logging.info('test get_ltv_by_id complete', i)
-        assert (i + 1 == get_ltv_by_phone(l_client, l_ns, l_st, i)), "No LTV by phone " + str(i)
-        logging.info('test get_ltv_by_phone complete', i)
+        assert (i + 1 == get_ltv_by_id(l_client, l_ns, l_st, i)), "No LTV by ID {0}".format(i)
+        logging.info('Test get_ltv_by_id complete {0}'.format(i))
+        assert (i + 1 == get_ltv_by_phone(l_client, l_ns, l_st, i)), "No LTV by phone {0}".format(i)
+        logging.info('Test get_ltv_by_phone complete {0}'.format(i))
 
 
 if __name__ == "__main__":
@@ -49,7 +52,7 @@ if __name__ == "__main__":
     parser.add_argument('--host', default='127.0.0.1', help='Aerospike server address')
     parser.add_argument('--port', type=int, default=3000, help='Aerospike server port')
     parser.add_argument('--namespace', default='test', help='namespace')
-    parser.add_argument('--set', default='ltv', help='set')
+    parser.add_argument('--set', default='clients', help='set')
     parser.add_argument('--add_customer', nargs=3, type=int, help='add customer by customer_id, phone_number, lifetime_value')
     parser.add_argument('--get_ltv_by_id', nargs=1, type=int, help='get lifetime_value by customer_id')
     parser.add_argument('--get_ltv_by_phone', nargs=1, type=int, help='get lifetime_value by phone_number')
